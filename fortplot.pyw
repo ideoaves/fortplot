@@ -69,7 +69,8 @@ def build_and_run(prog, name, code):
         for n in [prog, *LIBS]:
             r["src"][n] = code if n == name else (DIR / f"{n}.f").read_text(encoding="utf-8")
             (WORK / f"{n}.f").write_text(r["src"][n], encoding="utf-8", newline="")
-        opt = dict(cwd=WORK, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        opt = dict(cwd=WORK, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                   creationflags=subprocess.CREATE_NO_WINDOW)
         t0 = time.perf_counter()
         c = subprocess.run(["gfortran", *FLAGS, f"{prog}.f", *(f"{l}.f" for l in LIBS), "-o", str(EXE)], **opt)
         r.update(clog=c.stderr, crc=c.returncode, csecs=time.perf_counter() - t0)
